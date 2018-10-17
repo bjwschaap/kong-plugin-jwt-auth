@@ -45,7 +45,7 @@ Multiple roles in a claim called `Groups` as a single comma-separated string:
 }
 ```
 ### example 2
-Single role in a claim called `permission` as a single simple string:
+Single role in a claim called `perm` as a single simple string:
 ```json
 {
     "iss": "rVV0Atsoj7QwSX803D4sbBvFRu2EoTLo",
@@ -53,7 +53,7 @@ Single role in a claim called `permission` as a single simple string:
     "exp": 1571311565,
     "aud": "www.example.com",
     "sub": "jrocket@example.com",
-    "permission": "read"
+    "perm": "read"
 }
 ```
 ### example 3
