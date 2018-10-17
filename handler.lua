@@ -110,6 +110,18 @@ function JWTAuthHandler:access(conf)
   local claims = jwt.claims
   local roles = claims[conf.roles_claim_name]
 
+  -- check if no roles claimed..
+  if not roles then
+    return responses.send_HTTP_FORBIDDEN("You cannot consume this service")
+  end
+
+  -- if the claim is a string (single role), make it a table
+  if type(roles) == "string" then
+    roles_table = {}
+    table.insert(roles_table, roles)
+    roles = roles_table
+  end
+
   if conf.policy == policy_ANY and not role_in_roles_claim(conf.roles, roles) then
     return responses.send_HTTP_FORBIDDEN("You cannot consume this service")
   end
@@ -117,7 +129,7 @@ function JWTAuthHandler:access(conf)
   if conf.policy == policy_ALL and not all_roles_in_roles_claim(conf.roles, roles) then
     return responses.send_HTTP_FORBIDDEN("You cannot consume this service")
   end
-  
+
 end
 
 return JWTAuthHandler
