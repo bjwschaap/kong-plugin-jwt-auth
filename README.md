@@ -76,8 +76,9 @@ Multiple roles in a claim called `roles` as an array of strings:
 ```
 
 ## More information
-More info on working with JWTs in Kong, check the
-[documentation](https://docs.konghq.com/hub/kong-inc/jwt/).
+- [luarocks](https://luarocks.org/modules/bjwschaap/kong-plugin-jwt-auth)
+- More info on working with JWTs in Kong, check the
+  [documentation](https://docs.konghq.com/hub/kong-inc/jwt/).
 
 ## Work in progress
 This plugin is an exercise. Please don't use in production unless you know
