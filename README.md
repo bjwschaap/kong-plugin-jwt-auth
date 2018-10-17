@@ -26,7 +26,8 @@ with:
 $ curl -X POST http://kong:8001/routes/{route_id}/plugins \
     --data "name=jwt-auth" \
     --data "conf.roles_claim_name=Groups" \
-    --data "conf.roles=role1,role2,role3"
+    --data "conf.roles=role1,role2,role3" \
+    --data "conf.policy=all
 ```
 
 ## More information
