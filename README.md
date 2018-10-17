@@ -16,6 +16,7 @@ roles given in the plugin configuration.
 | ---------------- | ------ | -------- | ------- | ----------- |
 | roles_claim_name | string | X        | `roles` | Name of the claim/attribute in the JWT that contains the roles to check |
 | roles            | array  | -        |         | List of 1 or more roles that are allowed to use the resource (route, service, etc) |
+| policy           | string | X        | `any`   | Determines if at least one, or all roles should match. One of: `any` or `all` |
 
 ## Example: enabling the plugin on a route
 Configure this plugin on a [route](https://docs.konghq.com/latest/admin-api/#Route-object)

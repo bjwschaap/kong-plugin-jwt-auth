@@ -4,7 +4,11 @@ local constants = require "kong.constants"
 local jwt_decoder = require "kong.plugins.jwt.jwt_parser"
 
 local ngx_error = ngx.ERR
+local ngx_debug = ngx.DEBUG
 local ngx_log = ngx.log
+
+local policy_ALL = 'all'
+local policy_ANY = 'any'
 
 local JWTAuthHandler = BasePlugin:extend()
 
@@ -17,13 +21,59 @@ function JWTAuthHandler:new()
   JWTAuthHandler.super.new(self, "jwt-auth")
 end
 
+--- Filter a table
+-- @param filterFnc (function) filter function
+-- @return (table) the filtered table 
+function table:filter(filterFnc)
+  local result = {}
+
+  for k, v in ipairs(self) do
+      if filterFnc(v, k, self) then
+          table.insert(result, v)
+      end
+  end
+
+  return result
+end
+
+--- Get index of a value at a table.
+-- @param any value
+-- @return any
+function table:find(value)
+  for k, v in ipairs(self) do
+      if v == value then
+          return k
+      end
+  end
+end
+
+
+--- checks wheter all given roles are also present in the claimed roles
+-- @param roles_to_check (array) an array of role names
+-- @param claimed_roles (table) list of roles claimed in JWT
+-- @return (boolean) true if all given roles are also in the claimed roles
+local function all_roles_in_roles_claim(roles_to_check, claimed_roles)
+  local result = false
+  local diff
+
+  diff = table.filter(roles_to_check, function(value)
+           return not table.find(claimed_roles, value)
+         end)
+
+  if #diff == 0 then
+    result = true
+  end
+
+  return result
+end
+
 
 --- checks whether a claimed role is part of a given list of roles.
 -- @param roles_to_check (array) an array of role names.
 -- @param claimed_roles (table) list of roles claimed in JWT
 -- @return (boolean) whether a claimed role is part of any of the given roles.
 local function role_in_roles_claim(roles_to_check, claimed_roles)
-  result = false
+  local result = false
   for _, role_to_check in ipairs(roles_to_check) do
     for _, role in ipairs(claimed_roles) do
       if role == role_to_check then
@@ -35,6 +85,7 @@ local function role_in_roles_claim(roles_to_check, claimed_roles)
       break
     end
   end
+  
   return result
 end
 
@@ -59,10 +110,14 @@ function JWTAuthHandler:access(conf)
   local claims = jwt.claims
   local roles = claims[conf.roles_claim_name]
 
-  if not role_in_roles_claim(conf.roles, roles) then
+  if conf.policy == policy_ANY and not role_in_roles_claim(conf.roles, roles) then
     return responses.send_HTTP_FORBIDDEN("You cannot consume this service")
   end
 
+  if conf.policy == policy_ALL and not all_roles_in_roles_claim(conf.roles, roles) then
+    return responses.send_HTTP_FORBIDDEN("You cannot consume this service")
+  end
+  
 end
 
 return JWTAuthHandler
