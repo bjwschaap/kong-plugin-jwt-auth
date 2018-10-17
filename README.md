@@ -29,6 +29,49 @@ $ curl -X POST http://kong:8001/routes/{route_id}/plugins \
     --data "conf.roles=role1,role2,role3" \
     --data "conf.policy=all
 ```
+## JWT roles claim
+The roles claim in the JWT can be either an array or a (optionally comma-separated) string.
+
+### example 1
+Multiple roles in a claim called `Groups` as a single comma-separated string:
+```json
+{
+    "iss": "rVV0Atsoj7QwSX803D4sbBvFRu2EoTLo",
+    "iat": 1539775565,
+    "exp": 1571311565,
+    "aud": "www.example.com",
+    "sub": "jrocket@example.com",
+    "Groups": "A,B,C,D"
+}
+```
+### example 2
+Single role in a claim called `permission` as a single simple string:
+```json
+{
+    "iss": "rVV0Atsoj7QwSX803D4sbBvFRu2EoTLo",
+    "iat": 1539775565,
+    "exp": 1571311565,
+    "aud": "www.example.com",
+    "sub": "jrocket@example.com",
+    "permission": "read"
+}
+```
+### example 3
+Multiple roles in a claim called `roles` as an array of strings:
+```json
+{
+    "iss": "rVV0Atsoj7QwSX803D4sbBvFRu2EoTLo",
+    "iat": 1539775565,
+    "exp": 1571311565,
+    "aud": "www.example.com",
+    "sub": "jrocket@example.com",
+    "roles": [
+        "Editor",
+        "Viewer",
+        "Admin"
+    ]
+}
+```
 
 ## More information
 More info on working with JWTs in Kong, check the
