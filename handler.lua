@@ -44,7 +44,7 @@ function JWTAuthHandler:access(conf)
 
   -- get the JWT from the Nginx context
   local token = ngx.ctx.authenticated_jwt_token
-  if not token
+  if not token then
     ngx_log(ngx_error, "[jwt-auth plugin] Cannot get JWT token, add the ",
                        "JWT plugin to be able to use the JWT-Auth plugin")
     return responses.send_HTTP_FORBIDDEN("You cannot consume this service")
