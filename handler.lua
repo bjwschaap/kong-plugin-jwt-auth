@@ -89,6 +89,22 @@ local function role_in_roles_claim(roles_to_check, claimed_roles)
   return result
 end
 
+--- split a string into substrings by reparator
+-- @param str (string) the string to be splitted
+-- @param sep (string) single character string (!) to separate on
+-- @return (table) list of separated parts
+local function split(str, sep)
+  local ret = {}
+  local n=1
+  for w in str:gmatch("([^"..sep.."]*)") do
+     ret[n] = ret[n] or w:gsub("^%s*(.-)%s*$", "%1") -- strip whitespace
+     if w == "" then
+        n = n + 1
+     end
+  end
+  return ret
+end
+
 
 function JWTAuthHandler:access(conf)
   JWTAuthHandler.super.access(self)
@@ -109,6 +125,7 @@ function JWTAuthHandler:access(conf)
 
   local claims = jwt.claims
   local roles = claims[conf.roles_claim_name]
+  local roles_table = {}
 
   -- check if no roles claimed..
   if not roles then
@@ -117,8 +134,11 @@ function JWTAuthHandler:access(conf)
 
   -- if the claim is a string (single role), make it a table
   if type(roles) == "string" then
-    roles_table = {}
-    table.insert(roles_table, roles)
+    if string.find(roles, ",") then
+      roles_table = split(roles, ",")
+    else
+      table.insert(roles_table, roles)
+    end
     roles = roles_table
   end
 
